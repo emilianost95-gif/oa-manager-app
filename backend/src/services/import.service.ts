@@ -97,12 +97,12 @@ export async function parseImportFile(file: {
     const parsed = Papa.parse<Record<string, string>>(text, {
       header: true,
       skipEmptyLines: 'greedy',
-      transformHeader: (h) => HEADER_ALIASES[normalizeKey(h)] ?? normalizeKey(h),
+      transformHeader: (h: string) => HEADER_ALIASES[normalizeKey(h)] ?? normalizeKey(h)
     });
     if (parsed.errors.length && parsed.data.length === 0) {
       throw badRequest('No pudimos leer el archivo CSV. Verifica el formato.');
     }
-    return parsed.data.map((r) => mapValues(r));
+    return parsed.data.map((r: Record<string, string>) => mapValues(r));
   }
 
   if (name.endsWith('.xlsx') || name.endsWith('.xlsm')) {
