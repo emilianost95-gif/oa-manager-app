@@ -1,0 +1,141 @@
+// -----------------------------------------------------------------------------
+// Gestor de Objetivos de Aprendizaje — esquema de base de datos (PostgreSQL)
+// -----------------------------------------------------------------------------
+// Todas las entidades de contenido cuelgan de un User. Esto garantiza el
+// aislamiento de datos: cada profesora sólo ve y modifica lo suyo.
+// -----------------------------------------------------------------------------
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ObjectiveStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ObjectivePriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  courses    Course[]
+  subjects   Subject[]
+  units      Unit[]
+  objectives LearningObjective[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  units      Unit[]
+  objectives LearningObjective[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("courses")
+}
+
+model Subject {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  color       String   @default("#2563eb")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  units      Unit[]
+  objectives LearningObjective[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("subjects")
+}
+
+model Unit {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  objectives LearningObjective[]
+
+  @@unique([userId, subjectId, courseId, name])
+  @@index([userId])
+  @@index([subjectId])
+  @@index([courseId])
+  @@map("units")
+}
+
+model LearningObjective {
+  id          String            @id @default(uuid())
+  code        String
+  title       String
+  description String?
+  order       Int               @default(0)
+  status      ObjectiveStatus   @default(PENDING)
+  priority    ObjectivePriority @default(MEDIUM)
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  unitId String?
+  unit   Unit?   @relation(fields: [unitId], references: [id], onDelete: SetNull)
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([unitId])
+  @@index([subjectId])
+  @@index([courseId])
+  @@index([userId, order])
+  @@map("learning_objectives")
+}

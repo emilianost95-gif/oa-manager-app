@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+coverage/
+.vite/
+
+# Cliente de Prisma generado (se recrea con `npx prisma generate`)
+backend/src/generated/
+*.tsbuildinfo
