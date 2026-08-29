@@ -1,0 +1,47 @@
+# ---------------------------------------------------------------------------
+# Netlify — solo el frontend. El backend vive en Render.
+# ---------------------------------------------------------------------------
+# El Web Service de Render debe llamarse "oa-manager-api" para que la URL del
+# redirect de más abajo coincida. Si Render te asigna otra URL, cámbiala aquí.
+# ---------------------------------------------------------------------------
+
+[build]
+  # Netlify entra a esta carpeta antes de construir.
+  base    = "frontend"
+  command = "npm run build"
+  # Relativo a `base`, o sea: frontend/dist
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Opción B (proxy): el frontend llama a su propio dominio y Netlify reenvía.
+  # Así la cookie de sesión sigue siendo first-party y no hace falta CORS.
+  VITE_API_URL = "/api"
+
+# --- Proxy hacia la API en Render ------------------------------------------
+# Debe ir ANTES del fallback SPA: Netlify aplica la primera regla que calce.
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://oa-manager-api.onrender.com/api/:splat"
+  status = 200
+  force  = true
+
+# --- Fallback SPA (React Router) -------------------------------------------
+# Sin esto, recargar en /objetivos devuelve 404. Va SIEMPRE al final.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# --- Cabeceras de seguridad -------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

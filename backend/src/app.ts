@@ -11,6 +11,13 @@ export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
+
+  // En Render la app corre detrás de un proxy HTTPS. Sin esto Express ve "http"
+  // y la IP interna del proxy (req.protocol, req.ip, cookies secure).
+  if (env.isProduction) {
+    app.set('trust proxy', 1);
+  }
+
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
   app.use(
