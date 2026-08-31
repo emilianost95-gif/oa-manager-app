@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { GuideProvider } from './context/GuideContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './pages/LoginPage';
@@ -32,27 +33,29 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+          <GuideProvider>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route element={<AppLayout />}>
-                <Route index element={<DashboardPage />} />
-                <Route path="objetivos" element={<ObjectivesPage />} />
-                <Route path="asignaturas" element={<SubjectsPage />} />
-                <Route path="asignaturas/:id" element={<SubjectDetailPage />} />
-                <Route path="cursos" element={<CoursesPage />} />
-                <Route path="unidades" element={<UnitsPage />} />
-                <Route path="importar" element={<ImportPage />} />
-                <Route path="exportar" element={<ExportPage />} />
-                <Route path="configuracion" element={<SettingsPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AppLayout />}>
+                  <Route index element={<DashboardPage />} />
+                  <Route path="objetivos" element={<ObjectivesPage />} />
+                  <Route path="asignaturas" element={<SubjectsPage />} />
+                  <Route path="asignaturas/:id" element={<SubjectDetailPage />} />
+                  <Route path="cursos" element={<CoursesPage />} />
+                  <Route path="unidades" element={<UnitsPage />} />
+                  <Route path="importar" element={<ImportPage />} />
+                  <Route path="exportar" element={<ExportPage />} />
+                  <Route path="configuracion" element={<SettingsPage />} />
+                </Route>
               </Route>
-            </Route>
 
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-          </Routes>
+              <Route path="/404" element={<NotFoundPage />} />
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </GuideProvider>
         </AuthProvider>
       </BrowserRouter>
 

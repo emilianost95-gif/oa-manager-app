@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Select, TextArea, TextInput } from '../ui/Field';
 import { PRIORITY_LABEL, PRIORITY_ORDER, STATUS_LABEL, STATUS_ORDER } from '../../lib/labels';
 import { ApiError } from '../../lib/api';
+import { HELP } from '../../lib/helpContent';
 import type {
   Course,
   LearningObjective,
@@ -166,6 +167,7 @@ export function ObjectiveFormModal({
         <div className="grid gap-4 sm:grid-cols-[160px_1fr]">
           <TextInput
             label="Código del OA"
+            help={HELP.objectiveCode}
             placeholder="OA1"
             value={form.code}
             onChange={(e) => set('code', e.target.value)}
@@ -174,6 +176,7 @@ export function ObjectiveFormModal({
           />
           <TextInput
             label="Título"
+            help={HELP.objectiveTitle}
             placeholder="Resolver problemas con números racionales"
             value={form.title}
             onChange={(e) => set('title', e.target.value)}
@@ -184,6 +187,7 @@ export function ObjectiveFormModal({
 
         <TextArea
           label="Descripción"
+          help={HELP.objectiveDescription}
           placeholder="Detalle del objetivo, habilidades y contenidos asociados."
           value={form.description}
           onChange={(e) => set('description', e.target.value)}
@@ -193,6 +197,7 @@ export function ObjectiveFormModal({
         <div className="grid gap-4 sm:grid-cols-2">
           <Select
             label="Curso"
+            help={HELP.objectiveCourse}
             value={form.courseId}
             onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value, unitId: '' }))}
             error={errors.courseId}
@@ -208,6 +213,7 @@ export function ObjectiveFormModal({
 
           <Select
             label="Asignatura"
+            help={HELP.objectiveSubject}
             value={form.subjectId}
             onChange={(e) => setForm((p) => ({ ...p, subjectId: e.target.value, unitId: '' }))}
             error={errors.subjectId}
@@ -224,6 +230,7 @@ export function ObjectiveFormModal({
 
         <Select
           label="Unidad"
+          help={HELP.objectiveUnit}
           value={form.unitId}
           onChange={(e) => set('unitId', e.target.value)}
           error={errors.unitId}
@@ -244,6 +251,7 @@ export function ObjectiveFormModal({
         <div className="grid gap-4 sm:grid-cols-2">
           <Select
             label="Prioridad"
+            help={HELP.objectivePriority}
             value={form.priority}
             onChange={(e) => set('priority', e.target.value as ObjectivePriority)}
           >
@@ -256,6 +264,7 @@ export function ObjectiveFormModal({
 
           <Select
             label="Estado"
+            help={HELP.objectiveStatus}
             value={form.status}
             onChange={(e) => set('status', e.target.value as ObjectiveStatus)}
           >
@@ -269,6 +278,7 @@ export function ObjectiveFormModal({
 
         <TextArea
           label="Observaciones"
+          help={HELP.objectiveNotes}
           placeholder="Notas para el seguimiento, recursos, recordatorios..."
           value={form.notes}
           onChange={(e) => set('notes', e.target.value)}

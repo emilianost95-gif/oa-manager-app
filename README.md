@@ -575,6 +575,18 @@ Cambia `PORT` en `backend/.env`, o `server.port` en `frontend/vite.config.ts`.
 - Interfaz responsive: sidebar fijo en escritorio, menú desplegable en móvil, tablas que se
   convierten en tarjetas.
 - Manejo de errores que nunca expone detalles técnicos a la usuaria.
+- Ayuda contextual: iconos ⓘ junto a los campos importantes de cada formulario, con explicación y
+  ejemplo. Se abren con clic o tap (no dependen del hover), se cierran con Escape y funcionan en
+  móvil.
+- Botón **Ayuda** en el encabezado con un panel que resume qué es la aplicación, sus funciones
+  principales, el acceso al modo demo y la opción de repetir el tutorial.
+- Tutorial inicial de 4 pasos que se muestra una sola vez por cuenta, con Anterior / Siguiente /
+  Omitir tutorial y "Comenzar" en el último paso.
+- **Modo demo**: carga un set de datos ficticios (3 cursos, 4 asignaturas, 9 unidades y 20
+  objetivos) para explorar la aplicación sin escribir nada. Los datos viven sólo en el navegador:
+  el backend y la base de datos nunca se tocan, por lo que los datos reales quedan intactos y
+  vuelven al pulsar "Salir de demo". Mientras está activo se muestra la etiqueta MODO DEMO en el
+  encabezado, y las secciones Importar y Exportar avisan que sólo funcionan con datos reales.
 
 ## Posibles mejoras futuras
 

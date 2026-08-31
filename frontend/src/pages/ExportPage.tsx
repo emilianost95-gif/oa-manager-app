@@ -6,6 +6,8 @@ import { useCourses, useSubjects, useUnits } from '../hooks/useCatalog';
 import { ObjectiveFilters } from '../components/objectives/ObjectiveFilters';
 import { Button } from '../components/ui/Button';
 import { downloadFile } from '../lib/api';
+import { DemoNotice } from '../components/guide/DemoNotice';
+import { useGuide } from '../context/GuideContext';
 import type { ObjectiveFiltersState } from '../types';
 
 type Format = 'csv' | 'xlsx' | 'pdf';
@@ -44,6 +46,7 @@ export function ExportPage() {
   const [filters, setFilters] = useState<ObjectiveFiltersState>(EMPTY_FILTERS);
   const [expanded, setExpanded] = useState(true);
   const [downloading, setDownloading] = useState<Format | null>(null);
+  const { isDemo } = useGuide();
 
   const { data: courses = [] } = useCourses();
   const { data: subjects = [] } = useSubjects();
@@ -73,6 +76,8 @@ export function ExportPage() {
           La exportación respeta exactamente los filtros que elijas abajo.
         </p>
       </header>
+
+      <DemoNotice feature="La exportación" />
 
       <ObjectiveFilters
         filters={filters}
@@ -109,7 +114,7 @@ export function ExportPage() {
               variant={key === 'xlsx' ? 'primary' : 'outline'}
               loading={downloading === key}
               loadingText="Generando..."
-              disabled={(data?.total ?? 0) === 0}
+              disabled={isDemo || (data?.total ?? 0) === 0}
               onClick={() => void handleDownload(key, extension)}
             >
               Exportar {title}

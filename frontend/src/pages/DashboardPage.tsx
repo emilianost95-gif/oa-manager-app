@@ -8,9 +8,11 @@ import {
   Layers,
   ListChecks,
   Plus,
+  Sparkles,
   Upload,
 } from 'lucide-react';
 import { useDashboardStats } from '../hooks/useObjectives';
+import { useGuide } from '../context/GuideContext';
 import { StatCard } from '../components/dashboard/StatCard';
 import { ProgressBar, ProgressRing } from '../components/ui/ProgressBar';
 import { EmptyState, ErrorState, StatSkeleton, Skeleton } from '../components/ui/Feedback';
@@ -20,6 +22,7 @@ import { formatDate } from '../lib/labels';
 
 export function DashboardPage() {
   const { data, isLoading, isError, error, refetch } = useDashboardStats();
+  const { requestDemo } = useGuide();
 
   if (isLoading) {
     return (
@@ -48,14 +51,28 @@ export function DashboardPage() {
       <EmptyState
         icon={<ListChecks className="h-7 w-7" aria-hidden />}
         title="Aún no tienes objetivos cargados"
-        description="Empieza creando un curso y una asignatura, o importa tus Objetivos de Aprendizaje desde un archivo Excel o CSV."
+        description="Empieza creando un curso y una asignatura, o importa tus Objetivos de Aprendizaje desde un archivo Excel o CSV. Si prefieres mirar primero, activa el modo demo con datos de ejemplo."
         action={
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Link to="/objetivos">
-              <Button icon={<Plus className="h-4 w-4" aria-hidden />}>Crear objetivo</Button>
+            <Link to="/objetivos" className="sm:w-auto">
+              <Button className="w-full justify-center" icon={<Plus className="h-4 w-4" aria-hidden />}>
+                Crear objetivo
+              </Button>
             </Link>
-            <Link to="/importar">
-              <Button variant="outline" icon={<Upload className="h-4 w-4" aria-hidden />}>
+            <Button
+              variant="outline"
+              className="justify-center"
+              onClick={requestDemo}
+              icon={<Sparkles className="h-4 w-4" aria-hidden />}
+            >
+              Ver demo
+            </Button>
+            <Link to="/importar" className="sm:w-auto">
+              <Button
+                variant="outline"
+                className="w-full justify-center"
+                icon={<Upload className="h-4 w-4" aria-hidden />}
+              >
                 Importar desde archivo
               </Button>
             </Link>

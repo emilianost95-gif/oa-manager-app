@@ -11,6 +11,8 @@ import { TextArea, TextInput } from '../components/ui/Field';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { EmptyState, ErrorState, ListSkeleton } from '../components/ui/Feedback';
 import { ApiError } from '../lib/api';
+import { HELP } from '../lib/helpContent';
+import { HelpTip } from '../components/ui/HelpTip';
 import { cn } from '../lib/cn';
 import type { Subject } from '../types';
 
@@ -223,6 +225,7 @@ export function SubjectsPage() {
         <form id="subject-form" onSubmit={handleSubmit} className="space-y-4" noValidate>
           <TextInput
             label="Nombre"
+            help={HELP.subjectName}
             placeholder="Matemática"
             value={form.name}
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
@@ -231,13 +234,17 @@ export function SubjectsPage() {
           />
           <TextArea
             label="Descripción"
+            help={HELP.subjectDescription}
             placeholder="Pensamiento lógico, algebraico y análisis de datos."
             value={form.description}
             onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
             error={errors.description}
           />
           <fieldset>
-            <legend className="field-label">Color</legend>
+            <legend className="field-label mb-1.5 flex items-center gap-0.5">
+              Color
+              <HelpTip {...HELP.subjectColor} />
+            </legend>
             <div className="flex flex-wrap gap-2">
               {COLORS.map((color) => (
                 <button

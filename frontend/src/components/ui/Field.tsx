@@ -7,25 +7,30 @@ import type {
 import { useId } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { cn } from '../../lib/cn';
+import { HelpTip, type HelpContent } from './HelpTip';
 
 interface WrapperProps {
   label?: string;
   error?: string;
   hint?: string;
+  help?: HelpContent;
   required?: boolean;
   children: (id: string) => ReactNode;
   className?: string;
 }
 
-function FieldWrapper({ label, error, hint, required, children, className }: WrapperProps) {
+function FieldWrapper({ label, error, hint, help, required, children, className }: WrapperProps) {
   const id = useId();
   return (
     <div className={cn('w-full', className)}>
       {label && (
-        <label htmlFor={id} className="field-label">
-          {label}
-          {required && <span className="ml-0.5 text-rose-500">*</span>}
-        </label>
+        <div className="mb-1.5 flex items-center gap-0.5">
+          <label htmlFor={id} className="field-label mb-0">
+            {label}
+            {required && <span className="ml-0.5 text-rose-500">*</span>}
+          </label>
+          {help && <HelpTip {...help} />}
+        </div>
       )}
       {children(id)}
       {error ? (
@@ -44,6 +49,7 @@ interface TextInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'id
   label?: string;
   error?: string;
   hint?: string;
+  help?: HelpContent;
   wrapperClassName?: string;
 }
 
@@ -51,6 +57,7 @@ export function TextInput({
   label,
   error,
   hint,
+  help,
   required,
   className,
   wrapperClassName,
@@ -61,6 +68,7 @@ export function TextInput({
       label={label}
       error={error}
       hint={hint}
+      help={help}
       required={required}
       className={wrapperClassName}
     >
@@ -80,6 +88,7 @@ interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>
   label?: string;
   error?: string;
   hint?: string;
+  help?: HelpContent;
   wrapperClassName?: string;
 }
 
@@ -87,6 +96,7 @@ export function TextArea({
   label,
   error,
   hint,
+  help,
   required,
   className,
   wrapperClassName,
@@ -97,6 +107,7 @@ export function TextArea({
       label={label}
       error={error}
       hint={hint}
+      help={help}
       required={required}
       className={wrapperClassName}
     >
@@ -116,6 +127,7 @@ interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'
   label?: string;
   error?: string;
   hint?: string;
+  help?: HelpContent;
   wrapperClassName?: string;
   children: ReactNode;
 }
@@ -124,6 +136,7 @@ export function Select({
   label,
   error,
   hint,
+  help,
   required,
   className,
   wrapperClassName,
@@ -135,6 +148,7 @@ export function Select({
       label={label}
       error={error}
       hint={hint}
+      help={help}
       required={required}
       className={wrapperClassName}
     >

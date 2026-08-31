@@ -14,6 +14,8 @@ import { ApiError, api, downloadFile, request } from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { cn } from '../lib/cn';
 import { PRIORITY_LABEL, STATUS_LABEL } from '../lib/labels';
+import { DemoNotice } from '../components/guide/DemoNotice';
+import { useGuide } from '../context/GuideContext';
 import type { ImportPreview, ImportResult } from '../types';
 
 const EXPECTED_COLUMNS = [
@@ -36,6 +38,7 @@ export function ImportPage() {
   const [skipDuplicates, setSkipDuplicates] = useState(true);
   const [dragOver, setDragOver] = useState(false);
   const queryClient = useQueryClient();
+  const { isDemo } = useGuide();
 
   const previewMutation = useMutation({
     mutationFn: (selected: File) => {
@@ -82,6 +85,10 @@ export function ImportPage() {
   });
 
   const handleFile = (selected: File | null) => {
+    if (isDemo) {
+      toast.error('La importación no está disponible en el modo demo.');
+      return;
+    }
     setFile(selected);
     setResult(null);
     setPreview(null);
@@ -99,6 +106,8 @@ export function ImportPage() {
           previa y podrás revisar los errores antes de guardar.
         </p>
       </header>
+
+      <DemoNotice feature="La importación" />
 
       <section className="card p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -118,6 +127,7 @@ export function ImportPage() {
           <Button
             variant="outline"
             className="shrink-0"
+            disabled={isDemo}
             icon={<Download className="h-4 w-4" aria-hidden />}
             onClick={() =>
               void downloadFile('/import/template', {}, 'plantilla-objetivos.csv').catch(() =>
@@ -166,6 +176,7 @@ export function ImportPage() {
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
           <Button
             onClick={() => inputRef.current?.click()}
+            disabled={isDemo}
             loading={previewMutation.isPending}
             loadingText="Leyendo archivo..."
             icon={<Upload className="h-4 w-4" aria-hidden />}

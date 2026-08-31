@@ -11,6 +11,7 @@ import { Select, TextArea, TextInput } from '../components/ui/Field';
 import { ProgressBar } from '../components/ui/ProgressBar';
 import { EmptyState, ErrorState, ListSkeleton } from '../components/ui/Feedback';
 import { ApiError } from '../lib/api';
+import { HELP } from '../lib/helpContent';
 import type { Unit } from '../types';
 
 export function UnitsPage() {
@@ -268,6 +269,7 @@ export function UnitsPage() {
         <form id="unit-form" onSubmit={handleSubmit} className="space-y-4" noValidate>
           <TextInput
             label="Nombre"
+            help={HELP.unitName}
             placeholder="Unidad 1 — Números"
             value={form.name}
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
@@ -276,6 +278,7 @@ export function UnitsPage() {
           />
           <Select
             label="Asignatura"
+            help={HELP.unitSubject}
             value={form.subjectId}
             onChange={(e) => setForm((p) => ({ ...p, subjectId: e.target.value }))}
             error={errors.subjectId}
@@ -290,6 +293,7 @@ export function UnitsPage() {
           </Select>
           <Select
             label="Curso"
+            help={HELP.unitCourse}
             value={form.courseId}
             onChange={(e) => setForm((p) => ({ ...p, courseId: e.target.value }))}
             error={errors.courseId}
@@ -304,6 +308,7 @@ export function UnitsPage() {
           </Select>
           <TextArea
             label="Descripción"
+            help={HELP.unitDescription}
             placeholder="Contenidos y habilidades de la unidad."
             value={form.description}
             onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}

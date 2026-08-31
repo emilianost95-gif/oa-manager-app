@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
+import { cn } from '../../lib/cn';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -10,6 +12,9 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   loading?: boolean;
   loadingText?: string;
+  /** `danger` para acciones destructivas (por defecto), `info` para confirmaciones neutras. */
+  tone?: 'danger' | 'info';
+  icon?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -22,6 +27,8 @@ export function ConfirmDialog({
   cancelLabel = 'Cancelar',
   loading = false,
   loadingText = 'Eliminando...',
+  tone = 'danger',
+  icon,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -36,15 +43,25 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={onCancel} disabled={loading}>
             {cancelLabel}
           </Button>
-          <Button variant="danger" onClick={onConfirm} loading={loading} loadingText={loadingText}>
+          <Button
+            variant={tone === 'danger' ? 'danger' : 'primary'}
+            onClick={onConfirm}
+            loading={loading}
+            loadingText={loadingText}
+          >
             {confirmLabel}
           </Button>
         </>
       }
     >
       <div className="flex gap-4">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-rose-100">
-          <AlertTriangle className="h-5 w-5 text-rose-600" aria-hidden />
+        <span
+          className={cn(
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
+            tone === 'danger' ? 'bg-rose-100 text-rose-600' : 'bg-brand-50 text-brand-600',
+          )}
+        >
+          {icon ?? <AlertTriangle className="h-5 w-5" aria-hidden />}
         </span>
         <p className="pt-2 text-sm leading-relaxed text-slate-600">{message}</p>
       </div>

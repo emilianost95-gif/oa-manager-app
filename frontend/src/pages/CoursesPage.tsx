@@ -9,6 +9,7 @@ import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { TextArea, TextInput } from '../components/ui/Field';
 import { EmptyState, ErrorState, ListSkeleton } from '../components/ui/Feedback';
 import { ApiError } from '../lib/api';
+import { HELP } from '../lib/helpContent';
 import type { Course } from '../types';
 
 export function CoursesPage() {
@@ -166,6 +167,7 @@ export function CoursesPage() {
         <form id="course-form" onSubmit={handleSubmit} className="space-y-4" noValidate>
           <TextInput
             label="Nombre"
+            help={HELP.courseName}
             placeholder="4° Medio"
             value={form.name}
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
@@ -174,6 +176,7 @@ export function CoursesPage() {
           />
           <TextArea
             label="Descripción"
+            help={HELP.courseDescription}
             placeholder="Cuarto año de enseñanza media"
             value={form.description}
             onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}

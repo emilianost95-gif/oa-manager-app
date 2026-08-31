@@ -1,3 +1,6 @@
+import { isDemoActive } from './demoMode';
+import { handleDemoRequest, isDemoPath } from './demoApi';
+
 const BASE_URL = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:4000/api';
 
 export interface FieldIssue {
@@ -56,6 +59,14 @@ export function apiUrl(path: string, query?: Record<string, unknown>): string {
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { body, query, headers, quiet401 = false, ...rest } = options;
+
+  // Modo demo: las rutas de contenido se resuelven en memoria y nunca llegan al
+  // servidor, así que los datos reales de la usuaria quedan intactos.
+  if (isDemoActive() && isDemoPath(path)) {
+    const result = await handleDemoRequest<T>(rest.method ?? 'GET', path, body, query ?? {});
+    if (result.ok) return result.data;
+    throw new ApiError(result.message, result.status, result.code);
+  }
 
   const isFormData = body instanceof FormData;
 
@@ -129,6 +140,14 @@ export async function downloadFile(
   query: Record<string, unknown>,
   fallbackName: string,
 ): Promise<void> {
+  if (isDemoActive() && isDemoPath(path)) {
+    throw new ApiError(
+      'La descarga de archivos no está disponible en el modo demo. Sal del modo demo para usarla con tus datos reales.',
+      400,
+      'DEMO_UNSUPPORTED',
+    );
+  }
+
   const response = await fetch(apiUrl(path, query), { credentials: 'include' });
 
   if (!response.ok) {

@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { CircleHelp, LogOut, Menu, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { NAV_ITEMS, Sidebar } from './Sidebar';
 import { useAuth } from '../../context/AuthContext';
+import { useGuide } from '../../context/GuideContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { HelpPanel } from '../guide/HelpPanel';
+import { TourModal } from '../guide/TourModal';
 
 export function AppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const { logout } = useAuth();
+  const { isDemo, requestDemo, exitDemo, openHelp } = useGuide();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +23,7 @@ export function AppLayout() {
     )?.label ?? 'Objetivos de Aprendizaje';
 
   const handleLogout = async () => {
+    exitDemo();
     await logout();
     setConfirmLogout(false);
     toast.success('Sesión cerrada.');
@@ -44,6 +49,46 @@ export function AppLayout() {
             <Menu className="h-5 w-5" aria-hidden />
           </button>
           <h1 className="truncate text-base font-semibold text-slate-900 sm:text-lg">{current}</h1>
+
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {isDemo ? (
+              <>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-800 ring-1 ring-amber-200">
+                  <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                  Modo demo
+                </span>
+                <button
+                  type="button"
+                  onClick={exitDemo}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-xl px-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                >
+                  <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+                  <span className="hidden sm:inline">Salir de demo</span>
+                  <span className="sr-only sm:hidden">Salir de demo</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={requestDemo}
+                className="inline-flex h-9 items-center gap-1.5 rounded-xl px-2.5 text-sm font-medium text-brand-700 transition hover:bg-brand-50"
+              >
+                <Sparkles className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="hidden sm:inline">Ver demo</span>
+                <span className="sr-only sm:hidden">Ver demo</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={openHelp}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl px-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              <CircleHelp className="h-4 w-4 shrink-0" aria-hidden />
+              <span className="hidden sm:inline">Ayuda</span>
+              <span className="sr-only sm:hidden">Ayuda</span>
+            </button>
+          </div>
         </header>
 
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -60,6 +105,9 @@ export function AppLayout() {
         onConfirm={() => void handleLogout()}
         onCancel={() => setConfirmLogout(false)}
       />
+
+      <HelpPanel />
+      <TourModal />
     </div>
   );
 }
