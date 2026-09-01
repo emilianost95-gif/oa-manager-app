@@ -38,7 +38,7 @@ export function Sidebar({ open, onClose, onLogout }: SidebarProps) {
     <>
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-slate-900/50 lg:hidden"
+          className="fixed inset-0 z-30 bg-overlay/60 lg:hidden"
           onClick={onClose}
           aria-hidden
         />
@@ -46,14 +46,14 @@ export function Sidebar({ open, onClose, onLogout }: SidebarProps) {
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-slate-200 bg-white transition-transform duration-200 lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-slate-200 bg-surface transition-transform duration-200 lg:translate-x-0',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
         aria-label="Navegación principal"
       >
         <div className="flex items-center justify-between gap-2 px-5 py-5">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-on-accent">
               <ListChecks className="h-5 w-5" aria-hidden />
             </span>
             <div className="leading-tight">

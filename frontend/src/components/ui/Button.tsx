@@ -7,11 +7,11 @@ type Size = 'sm' | 'md' | 'lg' | 'icon';
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    'bg-brand-600 text-white shadow-sm hover:bg-brand-700 active:bg-brand-800 disabled:bg-brand-300',
+    'bg-brand-600 text-on-accent shadow-sm hover:bg-brand-700 active:bg-brand-800 disabled:bg-brand-300',
   secondary:
     'bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300 disabled:text-slate-400',
   outline:
-    'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 disabled:text-slate-400',
+    'border border-slate-300 bg-surface text-slate-700 hover:bg-slate-50 active:bg-slate-100 disabled:text-slate-400',
   ghost: 'text-slate-600 hover:bg-slate-100 active:bg-slate-200 disabled:text-slate-400',
   danger: 'bg-rose-600 text-white shadow-sm hover:bg-rose-700 active:bg-rose-800 disabled:bg-rose-300',
 };

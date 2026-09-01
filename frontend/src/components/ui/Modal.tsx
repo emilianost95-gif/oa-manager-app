@@ -47,7 +47,7 @@ export function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-slate-900/50 p-0 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-overlay/60 p-0 backdrop-blur-[2px] sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -57,7 +57,7 @@ export function Modal({
     >
       <div
         className={cn(
-          'w-full rounded-t-2xl bg-white shadow-xl sm:rounded-2xl',
+          'w-full rounded-t-2xl bg-surface shadow-xl sm:rounded-2xl',
           'max-h-[92vh] overflow-hidden flex flex-col',
           SIZES[size],
         )}

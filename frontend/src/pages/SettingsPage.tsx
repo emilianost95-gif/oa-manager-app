@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { ApiError, api } from '../lib/api';
 import { Button } from '../components/ui/Button';
 import { PasswordInput, TextInput } from '../components/ui/Field';
+import { AppearancePanel } from '../components/settings/AppearancePanel';
 import type { User } from '../types';
 
 export function SettingsPage() {
@@ -78,8 +79,12 @@ export function SettingsPage() {
     <div className="max-w-2xl space-y-5">
       <header>
         <h2 className="text-xl font-bold text-slate-900">Configuración</h2>
-        <p className="mt-0.5 text-sm text-slate-500">Administra los datos de tu cuenta.</p>
+        <p className="mt-0.5 text-sm text-slate-500">
+          Administra los datos de tu cuenta y la apariencia de la aplicación.
+        </p>
       </header>
+
+      <AppearancePanel />
 
       <section className="card p-6">
         <div className="mb-5 flex items-center gap-3">

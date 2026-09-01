@@ -21,7 +21,7 @@ export function DemoNotice({ feature }: { feature: string }) {
       <button
         type="button"
         onClick={exitDemo}
-        className="shrink-0 self-start rounded-xl border border-amber-300 bg-white px-3 py-1.5 text-sm font-medium text-amber-900 transition hover:bg-amber-100 sm:self-auto"
+        className="shrink-0 self-start rounded-xl border border-amber-300 bg-surface px-3 py-1.5 text-sm font-medium text-amber-900 transition hover:bg-amber-100 sm:self-auto"
       >
         Salir de demo
       </button>

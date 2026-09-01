@@ -99,7 +99,7 @@ export function ObjectiveFilters({
               <span
                 className={cn(
                   'ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold',
-                  expanded ? 'bg-white/25 text-white' : 'bg-brand-100 text-brand-700',
+                  expanded ? 'bg-on-accent/25 text-on-accent' : 'bg-brand-100 text-brand-700',
                 )}
               >
                 {activeCount}
@@ -203,8 +203,8 @@ export function ObjectiveFilters({
                       className={cn(
                         'rounded-full border px-3.5 py-1.5 text-sm font-medium transition',
                         active
-                          ? 'border-brand-600 bg-brand-600 text-white'
-                          : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50',
+                          ? 'border-brand-600 bg-brand-600 text-on-accent'
+                          : 'border-slate-300 bg-surface text-slate-600 hover:bg-slate-50',
                       )}
                     >
                       {STATUS_LABEL[status]}
@@ -228,8 +228,8 @@ export function ObjectiveFilters({
                       className={cn(
                         'rounded-full border px-3.5 py-1.5 text-sm font-medium transition',
                         active
-                          ? 'border-brand-600 bg-brand-600 text-white'
-                          : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50',
+                          ? 'border-brand-600 bg-brand-600 text-on-accent'
+                          : 'border-slate-300 bg-surface text-slate-600 hover:bg-slate-50',
                       )}
                     >
                       {PRIORITY_LABEL[priority]}

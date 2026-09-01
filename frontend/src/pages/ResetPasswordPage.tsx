@@ -111,7 +111,7 @@ export function ResetPasswordPage() {
         subtitle="Comprobando el enlace..."
         footer={backToLogin}
       >
-        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-surface p-5 text-sm text-slate-600">
           <Loader2 className="h-5 w-5 animate-spin text-brand-600" aria-hidden />
           Verificando que el enlace siga siendo válido...
         </div>

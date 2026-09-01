@@ -136,7 +136,7 @@ export function HelpTip({ title, body, example, size = 'sm', className }: HelpTi
               width: Math.min(WIDTH, window.innerWidth - MARGIN * 2),
             }}
             className={cn(
-              'fixed z-[60] rounded-xl border border-slate-200 bg-white p-3.5 text-left shadow-lg',
+              'fixed z-[60] rounded-xl border border-slate-200 bg-surface p-3.5 text-left shadow-lg',
               'origin-top animate-[help-pop_120ms_ease-out]',
             )}
           >

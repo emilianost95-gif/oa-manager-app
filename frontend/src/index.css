@@ -1,10 +1,35 @@
 @import 'tailwindcss';
 
+/* -----------------------------------------------------------------------------
+ * Sistema de apariencia
+ * -----------------------------------------------------------------------------
+ * La aplicación usa clases fijas de Tailwind (bg-white, text-slate-900,
+ * bg-brand-600...). En Tailwind v4 cada una de esas clases compila a una
+ * variable CSS: `text-slate-900` es `color: var(--color-slate-900)`.
+ *
+ * Aprovechamos eso: en vez de reescribir los ~350 colores repartidos por la
+ * app, redefinimos las variables según el tema y el acento. Un solo lugar
+ * controla toda la paleta y ningún componente necesita saber qué tema está
+ * activo.
+ *
+ * CONSECUENCIA IMPORTANTE PARA QUIEN MANTENGA ESTO:
+ * en los temas oscuros la escala `slate` queda invertida, así que
+ * `text-slate-900` pinta CLARO y `bg-slate-100` pinta OSCURO. Es intencional.
+ * Piensa en `slate-900` como "el texto de mayor contraste" y en `slate-50`
+ * como "el fondo", no como un gris concreto.
+ *
+ * Para las superficies usa `bg-surface` (tarjetas) en lugar de `bg-white`:
+ * `text-white` sigue siendo blanco de verdad, porque se usa sobre botones
+ * de color donde el blanco debe seguir siendo blanco.
+ * -------------------------------------------------------------------------- */
+
 @theme {
   --font-sans:
     'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, sans-serif;
 
+  /* Los valores reales los fija el acento y el tema; esto sólo hace que
+     Tailwind genere las utilidades correspondientes. */
   --color-brand-50: #eff6ff;
   --color-brand-100: #dbeafe;
   --color-brand-200: #bfdbfe;
@@ -15,6 +40,255 @@
   --color-brand-700: #1d4ed8;
   --color-brand-800: #1e40af;
   --color-brand-900: #1e3a8a;
+
+  /* Superficie de las tarjetas: reemplaza a `bg-white`. */
+  --color-surface: #ffffff;
+  /* Texto que va ENCIMA de un fondo de acento. */
+  --color-on-accent: #ffffff;
+  /* Velo de los modales. */
+  --color-overlay: #0f172a;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Acentos: sólo definen el tono. El tema decide cómo se usa.                  */
+/* -------------------------------------------------------------------------- */
+
+:root,
+[data-accent='azul'] {
+  --a-50: #eff6ff;
+  --a-100: #dbeafe;
+  --a-200: #bfdbfe;
+  --a-300: #93c5fd;
+  --a-400: #60a5fa;
+  --a-500: #3b82f6;
+  --a-600: #2563eb;
+  --a-700: #1d4ed8;
+  --a-800: #1e40af;
+  --a-900: #1e3a8a;
+}
+
+[data-accent='verde'] {
+  --a-50: #ecfdf5;
+  --a-100: #d1fae5;
+  --a-200: #a7f3d0;
+  --a-300: #6ee7b7;
+  --a-400: #34d399;
+  --a-500: #10b981;
+  --a-600: #059669;
+  --a-700: #047857;
+  --a-800: #065f46;
+  --a-900: #064e3b;
+}
+
+[data-accent='violeta'] {
+  --a-50: #f5f3ff;
+  --a-100: #ede9fe;
+  --a-200: #ddd6fe;
+  --a-300: #c4b5fd;
+  --a-400: #a78bfa;
+  --a-500: #8b5cf6;
+  --a-600: #7c3aed;
+  --a-700: #6d28d9;
+  --a-800: #5b21b6;
+  --a-900: #4c1d95;
+}
+
+[data-accent='naranja'] {
+  --a-50: #fff7ed;
+  --a-100: #ffedd5;
+  --a-200: #fed7aa;
+  --a-300: #fdba74;
+  --a-400: #fb923c;
+  --a-500: #f97316;
+  --a-600: #ea580c;
+  --a-700: #c2410c;
+  --a-800: #9a3412;
+  --a-900: #7c2d12;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Temas: superficies, escala de grises y peldaño de acento                    */
+/* -------------------------------------------------------------------------- */
+
+/* --- Claro (base) --------------------------------------------------------- */
+:root,
+[data-theme='claro'] {
+  color-scheme: light;
+
+  --color-surface: #ffffff;
+  --color-on-accent: #ffffff;
+  --color-overlay: #0f172a;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  /* En claro, el acento se usa tal cual. */
+  --accent-solid: var(--a-600);
+  --accent-solid-hover: var(--a-700);
+  --accent-solid-active: var(--a-800);
+  --accent-soft: var(--a-300);
+}
+
+/* --- Azul Educativo: claro con base azulada -------------------------------- */
+[data-theme='azul-educativo'] {
+  color-scheme: light;
+
+  --color-surface: #ffffff;
+  --color-on-accent: #ffffff;
+  --color-overlay: #0b1b33;
+
+  --color-slate-50: #eef4fd;
+  --color-slate-100: #e3ecfa;
+  --color-slate-200: #d0dcf0;
+  --color-slate-300: #b2c5e3;
+  --color-slate-400: #7f95b6;
+  --color-slate-500: #5d7391;
+  --color-slate-600: #465c79;
+  --color-slate-700: #33455e;
+  --color-slate-800: #22324a;
+  --color-slate-900: #122039;
+
+  --accent-solid: var(--a-600);
+  --accent-solid-hover: var(--a-700);
+  --accent-solid-active: var(--a-800);
+  --accent-soft: var(--a-300);
+}
+
+/* --- Oscuro ---------------------------------------------------------------- */
+[data-theme='oscuro'] {
+  color-scheme: dark;
+
+  --color-surface: #1e2430;
+  --color-on-accent: #0b1020;
+  --color-overlay: #05070c;
+
+  /* Escala invertida: 50 es el fondo, 900 el texto de mayor contraste. */
+  --color-slate-50: #141922;
+  --color-slate-100: #262d3a;
+  --color-slate-200: #323a49;
+  --color-slate-300: #414a5b;
+  --color-slate-400: #7c8798;
+  --color-slate-500: #9aa5b5;
+  --color-slate-600: #b6c0ce;
+  --color-slate-700: #ccd4df;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f4f7fb;
+
+  /* Sobre fondo oscuro el acento necesita subir de luminosidad. */
+  --accent-solid: var(--a-400);
+  --accent-solid-hover: var(--a-300);
+  --accent-solid-active: var(--a-200);
+  --accent-soft: var(--a-700);
+}
+
+/* --- Azul Noche ------------------------------------------------------------ */
+[data-theme='azul-noche'] {
+  color-scheme: dark;
+
+  --color-surface: #17203a;
+  --color-on-accent: #06101f;
+  --color-overlay: #030814;
+
+  --color-slate-50: #0d1425;
+  --color-slate-100: #1f2a47;
+  --color-slate-200: #2b3860;
+  --color-slate-300: #3a4a78;
+  --color-slate-400: #7889ae;
+  --color-slate-500: #94a3c4;
+  --color-slate-600: #b3c0dc;
+  --color-slate-700: #ccd6ec;
+  --color-slate-800: #e3eaf7;
+  --color-slate-900: #f2f6ff;
+
+  --accent-solid: var(--a-400);
+  --accent-solid-hover: var(--a-300);
+  --accent-solid-active: var(--a-200);
+  --accent-soft: var(--a-700);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Derivados: valen para todos los temas porque se mezclan con la superficie   */
+/* y con el color de texto, que ya cambian según el tema.                      */
+/* -------------------------------------------------------------------------- */
+
+:root,
+[data-theme] {
+  /* Tonos base de los colores semánticos: no cambian con el tema. */
+  --h-emerald: #10b981;
+  --h-amber: #f59e0b;
+  --h-rose: #f43f5e;
+  --h-sky: #0ea5e9;
+  --h-indigo: #6366f1;
+  --h-violet: #8b5cf6;
+
+  /* --- Acento (escala `brand`) --- */
+  --color-brand-50: color-mix(in oklab, var(--a-500) 10%, var(--color-surface));
+  --color-brand-100: color-mix(in oklab, var(--a-500) 18%, var(--color-surface));
+  --color-brand-200: color-mix(in oklab, var(--a-500) 28%, var(--color-surface));
+  --color-brand-300: var(--accent-soft);
+  --color-brand-400: var(--a-400);
+  --color-brand-500: var(--a-500);
+  --color-brand-600: var(--accent-solid);
+  --color-brand-700: var(--accent-solid-hover);
+  --color-brand-800: var(--accent-solid-active);
+  --color-brand-900: color-mix(in oklab, var(--a-500) 65%, var(--color-slate-900));
+
+  /* --- Colores semánticos ---
+     Los tintes (-50/-100/-200) se mezclan con la superficie, así que se
+     oscurecen solos en los temas oscuros. Los textos (-600 en adelante) se
+     mezclan con el color de texto, así que se aclaran solos. Con eso, cada
+     par fondo/texto conserva su contraste en los cuatro temas. */
+
+  --color-emerald-50: color-mix(in oklab, var(--h-emerald) 10%, var(--color-surface));
+  --color-emerald-100: color-mix(in oklab, var(--h-emerald) 18%, var(--color-surface));
+  --color-emerald-200: color-mix(in oklab, var(--h-emerald) 32%, var(--color-surface));
+  --color-emerald-500: var(--h-emerald);
+  --color-emerald-600: color-mix(in oklab, var(--h-emerald) 78%, var(--color-slate-900));
+  --color-emerald-700: color-mix(in oklab, var(--h-emerald) 62%, var(--color-slate-900));
+  --color-emerald-800: color-mix(in oklab, var(--h-emerald) 50%, var(--color-slate-900));
+  --color-emerald-900: color-mix(in oklab, var(--h-emerald) 38%, var(--color-slate-900));
+
+  --color-amber-50: color-mix(in oklab, var(--h-amber) 12%, var(--color-surface));
+  --color-amber-100: color-mix(in oklab, var(--h-amber) 20%, var(--color-surface));
+  --color-amber-200: color-mix(in oklab, var(--h-amber) 34%, var(--color-surface));
+  --color-amber-300: color-mix(in oklab, var(--h-amber) 46%, var(--color-surface));
+  --color-amber-500: var(--h-amber);
+  --color-amber-600: color-mix(in oklab, var(--h-amber) 78%, var(--color-slate-900));
+  --color-amber-700: color-mix(in oklab, var(--h-amber) 62%, var(--color-slate-900));
+  --color-amber-800: color-mix(in oklab, var(--h-amber) 50%, var(--color-slate-900));
+  --color-amber-900: color-mix(in oklab, var(--h-amber) 38%, var(--color-slate-900));
+
+  --color-rose-50: color-mix(in oklab, var(--h-rose) 10%, var(--color-surface));
+  --color-rose-100: color-mix(in oklab, var(--h-rose) 18%, var(--color-surface));
+  --color-rose-200: color-mix(in oklab, var(--h-rose) 30%, var(--color-surface));
+  --color-rose-300: color-mix(in oklab, var(--h-rose) 45%, var(--color-surface));
+  --color-rose-400: color-mix(in oklab, var(--h-rose) 70%, var(--color-surface));
+  --color-rose-500: var(--h-rose);
+  --color-rose-600: color-mix(in oklab, var(--h-rose) 82%, var(--color-slate-900));
+  --color-rose-700: color-mix(in oklab, var(--h-rose) 66%, var(--color-slate-900));
+  --color-rose-800: color-mix(in oklab, var(--h-rose) 52%, var(--color-slate-900));
+
+  --color-sky-50: color-mix(in oklab, var(--h-sky) 10%, var(--color-surface));
+  --color-sky-200: color-mix(in oklab, var(--h-sky) 30%, var(--color-surface));
+  --color-sky-500: var(--h-sky);
+  --color-sky-600: color-mix(in oklab, var(--h-sky) 78%, var(--color-slate-900));
+  --color-sky-700: color-mix(in oklab, var(--h-sky) 62%, var(--color-slate-900));
+
+  --color-indigo-50: color-mix(in oklab, var(--h-indigo) 10%, var(--color-surface));
+  --color-indigo-200: color-mix(in oklab, var(--h-indigo) 30%, var(--color-surface));
+  --color-indigo-500: var(--h-indigo);
+  --color-indigo-700: color-mix(in oklab, var(--h-indigo) 62%, var(--color-slate-900));
+
+  --color-violet-50: color-mix(in oklab, var(--h-violet) 10%, var(--color-surface));
+  --color-violet-600: color-mix(in oklab, var(--h-violet) 78%, var(--color-slate-900));
 }
 
 @layer base {
@@ -34,7 +308,7 @@
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+    @apply rounded-2xl border border-slate-200 bg-surface shadow-sm;
   }
 
   .field-label {
@@ -42,7 +316,7 @@
   }
 
   .input-base {
-    @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900
+    @apply w-full rounded-xl border border-slate-300 bg-surface px-3.5 py-2.5 text-sm text-slate-900
       placeholder:text-slate-400 transition
       focus:border-brand-500 focus:ring-4 focus:ring-brand-100 focus:outline-none
       disabled:cursor-not-allowed disabled:bg-slate-100;
@@ -53,19 +327,42 @@
   }
 }
 
+/* Transición sólo durante el cambio de tema: evita el coste permanente de
+   animar todo y el parpadeo al cargar la página. */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    fill 200ms ease,
+    stroke 200ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-switching,
+  .theme-switching *,
+  .theme-switching *::before,
+  .theme-switching *::after {
+    transition: none !important;
+  }
+}
+
 /* Barra de desplazamiento discreta */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(203 213 225);
+  background-color: var(--color-slate-300);
   border-radius: 9999px;
   border: 3px solid transparent;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(148 163 184);
+  background-color: var(--color-slate-400);
   background-clip: content-box;
 }
 

@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { GuideProvider } from './context/GuideContext';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { AppLayout } from './components/layout/AppLayout';
@@ -33,6 +34,7 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
           <GuideProvider>
@@ -62,6 +64,7 @@ export default function App() {
           </GuideProvider>
         </AuthProvider>
       </BrowserRouter>
+      </ThemeProvider>
 
       <Toaster
         position="top-right"
@@ -69,12 +72,13 @@ export default function App() {
           duration: 3500,
           style: {
             borderRadius: '12px',
-            background: '#0f172a',
-            color: '#f8fafc',
+            background: 'var(--color-slate-800)',
+            color: 'var(--color-slate-50)',
+            border: '1px solid var(--color-slate-700)',
             fontSize: '14px',
           },
-          success: { iconTheme: { primary: '#10b981', secondary: '#f8fafc' } },
-          error: { duration: 5000, iconTheme: { primary: '#f43f5e', secondary: '#f8fafc' } },
+          success: { iconTheme: { primary: 'var(--h-emerald)', secondary: 'var(--color-slate-50)' } },
+          error: { duration: 5000, iconTheme: { primary: 'var(--h-rose)', secondary: 'var(--color-slate-50)' } },
         }}
       />
     </QueryClientProvider>
