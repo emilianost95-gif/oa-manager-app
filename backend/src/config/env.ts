@@ -15,6 +15,14 @@ const envSchema = z.object({
    * Si no se define se usa el primer origen de FRONTEND_URL.
    */
   PUBLIC_APP_URL: z.string().optional(),
+
+  /**
+   * Proveedor de correo (Resend). Si falta cualquiera de las dos, no se envía
+   * nada: en desarrollo el enlace se imprime en la consola.
+   */
+  RESEND_API_KEY: z.string().optional(),
+  /** Remitente verificado, por ejemplo: "OA Manager <no-reply@tu-dominio.cl>". */
+  MAIL_FROM: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -32,6 +40,16 @@ const raw = parsed.data;
 const allowedOrigins = raw.FRONTEND_URL.split(',')
   .map((o) => o.trim())
   .filter(Boolean);
+
+// Configurar sólo una de las dos es casi siempre un olvido, y el síntoma
+// (correos que nunca llegan) es difícil de diagnosticar. Mejor avisar al
+// arrancar.
+if (Boolean(raw.RESEND_API_KEY) !== Boolean(raw.MAIL_FROM)) {
+  console.warn(
+    '[config] RESEND_API_KEY y MAIL_FROM deben definirse juntas. ' +
+      'Falta una de las dos, así que el envío de correo queda desactivado.',
+  );
+}
 
 export const env = {
   ...raw,

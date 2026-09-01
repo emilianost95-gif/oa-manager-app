@@ -611,17 +611,35 @@ Cambia `PORT` en `backend/.env`, o `server.port` en `frontend/vite.config.ts`.
 Pedir un enlace nuevo invalida el anterior. Hay un límite de 3 solicitudes por correo y 10 por IP
 cada 15 minutos.
 
-### Falta para que el correo salga de verdad
+### El envío del correo
 
-`backend/src/lib/mailer.ts` es el **único** punto de envío. Hoy no hay proveedor configurado:
+`backend/src/lib/mailer.ts` es el **único** punto de envío. Usa **Resend** por HTTP, sin
+dependencias: se eligió así porque Render bloquea los puertos SMTP salientes en el plan gratuito,
+y una petición HTTPS normal no se topa con esa restricción.
+
+El envío se activa sólo cuando existen `RESEND_API_KEY` y `MAIL_FROM`. Si falta alguna:
 
 - en desarrollo imprime el enlace en la consola del backend, así el flujo se puede probar completo;
 - en producción registra una advertencia **sin** el enlace (un token en los logs equivale a una
-  contraseña) y no envía nada.
+  contraseña).
 
-Para hacerlo real basta con reemplazar el cuerpo de `deliver()` por una llamada al proveedor
-(Resend, SMTP, SES...). El archivo trae el ejemplo con Resend, que no necesita dependencias
-nuevas. Nada más de la aplicación cambia.
+Si el proveedor está configurado pero rechaza el envío, el log lo dice explícitamente y con el
+motivo que devolvió Resend — normalmente, el dominio del remitente sin verificar.
+
+### Configurar Resend
+
+1. Crea una cuenta en [resend.com](https://resend.com) y una API key en **API Keys**.
+2. En **Domains**, verifica tu dominio agregando los registros DNS que indica. Sin dominio
+   verificado puedes usar el remitente de prueba `onboarding@resend.dev`, pero Resend sólo
+   entregará correos a la dirección con la que creaste la cuenta.
+3. Define las dos variables en el backend (en Render: Environment → Add Environment Variable):
+
+```
+RESEND_API_KEY = re_...
+MAIL_FROM      = OA Manager <no-reply@tu-dominio.cl>
+```
+
+Ambas deben ir juntas: si sólo defines una, el backend avisa al arrancar y deja el envío apagado.
 
 ### Variables de entorno
 
@@ -629,6 +647,8 @@ nuevas. Nada más de la aplicación cambia.
 | --- | --- | --- |
 | `PASSWORD_RESET_TTL_MINUTES` | `60` | Minutos que dura el enlace. |
 | `PUBLIC_APP_URL` | primer origen de `FRONTEND_URL` | Base del enlace que va en el correo. |
+| `RESEND_API_KEY` | — | API key de Resend. Sin ella no se envía nada. |
+| `MAIL_FROM` | — | Remitente verificado del correo. |
 
 ### Migraciones al desplegar
 

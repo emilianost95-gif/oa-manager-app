@@ -4,20 +4,24 @@ import { env } from '../config/env';
  * -----------------------------------------------------------------------------
  * Punto único de envío de correo.
  * -----------------------------------------------------------------------------
- * Hoy OA Manager NO tiene proveedor de correo configurado. Para no fingir un
- * envío que no ocurre, este módulo se comporta así:
+ * El proveedor es Resend, llamado por HTTP. Se eligió así a propósito: Render
+ * bloquea los puertos SMTP salientes en el plan gratuito, y una petición HTTPS
+ * normal no se topa con esa restricción. Tampoco hace falta instalar nada.
+ *
+ * Se activa solo cuando existen RESEND_API_KEY y MAIL_FROM. Si faltan:
  *
  *   - En desarrollo: imprime el enlace en la consola del backend, para poder
- *     probar el flujo completo de extremo a extremo sin servidor de correo.
+ *     probar el flujo completo sin servidor de correo.
  *   - En producción: registra una advertencia SIN el enlace (un token impreso
- *     en los logs de Render sería un enlace válido para quien los lea) y
- *     devuelve `false`.
+ *     en los logs de Render sería un enlace válido para quien los lea).
  *
- * PARA HACERLO REAL sólo hay que reemplazar el cuerpo de `deliver()` por una
- * llamada al proveedor. El resto de la aplicación no cambia. Ver el README,
- * sección "Recuperación de contraseña".
+ * Para cambiar de proveedor basta con reescribir `deliver()`. El resto de la
+ * aplicación no cambia. Ver el README, sección "Recuperación de contraseña".
  * -----------------------------------------------------------------------------
  */
+
+const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+const SEND_TIMEOUT_MS = 10_000;
 
 export interface OutgoingEmail {
   to: string;
@@ -26,34 +30,41 @@ export interface OutgoingEmail {
   html: string;
 }
 
-/** ¿Hay un proveedor de correo configurado? Hoy: no. */
+/** ¿Hay un proveedor de correo configurado y listo para enviar? */
 export function isMailConfigured(): boolean {
-  return false;
+  return Boolean(env.RESEND_API_KEY && env.MAIL_FROM);
 }
 
 async function deliver(email: OutgoingEmail): Promise<boolean> {
-  // TODO: conectar aquí el proveedor de correo (Resend, SMTP, SES...).
-  //
-  // Ejemplo con Resend, sin dependencias extra:
-  //
-  //   const response = await fetch('https://api.resend.com/emails', {
-  //     method: 'POST',
-  //     headers: {
-  //       Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       from: 'OA Manager <no-reply@tu-dominio.cl>',
-  //       to: email.to,
-  //       subject: email.subject,
-  //       text: email.text,
-  //       html: email.html,
-  //     }),
-  //   });
-  //   return response.ok;
+  if (!isMailConfigured()) return false;
 
-  void email;
-  return false;
+  const response = await fetch(RESEND_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: env.MAIL_FROM,
+      to: [email.to],
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
+    }),
+    // Sin esto, una caída del proveedor dejaría la petición colgada y la
+    // usuaria esperando en la pantalla de "Enviar enlace".
+    signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
+  });
+
+  if (!response.ok) {
+    // El cuerpo del error de Resend describe el problema (dominio sin
+    // verificar, remitente inválido...) y nunca incluye la API key.
+    const detail = await response.text().catch(() => '');
+    console.error(`[mailer] Resend respondió ${response.status}. ${detail.slice(0, 300)}`);
+    return false;
+  }
+
+  return true;
 }
 
 export interface PasswordResetEmail {
@@ -111,14 +122,21 @@ export async function sendPasswordResetEmail(input: PasswordResetEmail): Promise
     console.error('[mailer] Falló el envío del correo de recuperación.', error);
   }
 
-  if (env.isProduction) {
-    // Sin enlace: un token en los logs equivale a una contraseña.
+  // Por qué no salió: distinguir "no está configurado" de "está configurado y
+  // falló" es lo que permite diagnosticar el problema desde los logs.
+  if (isMailConfigured()) {
+    console.error('[mailer] El proveedor no aceptó el envío del enlace de recuperación.');
+  } else if (env.isProduction) {
     console.warn(
       '[mailer] No hay proveedor de correo configurado: no se envió el enlace de recuperación.',
     );
-  } else {
+  }
+
+  // El enlace sólo se imprime fuera de producción: un token en los logs de
+  // Render equivale a una contraseña para quien pueda leerlos.
+  if (!env.isProduction) {
     console.info(
-      `\n[mailer] Sin proveedor de correo configurado. Enlace de recuperación para ${to}:\n  ${resetUrl}\n  (vence en ${expiresInMinutes} minutos)\n`,
+      `\n[mailer] Enlace de recuperación para ${to} (no salió por correo):\n  ${resetUrl}\n  (vence en ${expiresInMinutes} minutos)\n`,
     );
   }
 
