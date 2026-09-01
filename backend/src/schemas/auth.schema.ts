@@ -34,6 +34,32 @@ export const changePasswordSchema = z.object({
     .max(72, 'La contraseña no puede superar los 72 caracteres.'),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().email('Ingresa un email válido.'),
+});
+
+const resetTokenSchema = z
+  .string({ required_error: 'Falta el token de recuperación.' })
+  .trim()
+  .min(20, 'El enlace de recuperación no es válido.')
+  .max(200, 'El enlace de recuperación no es válido.');
+
+export const verifyResetTokenSchema = z.object({
+  token: resetTokenSchema,
+});
+
+export const resetPasswordSchema = z.object({
+  token: resetTokenSchema,
+  password: z
+    .string({ required_error: 'La contraseña es obligatoria.' })
+    .min(8, 'La contraseña debe tener al menos 8 caracteres.')
+    .max(72, 'La contraseña no puede superar los 72 caracteres.'),
+});
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type VerifyResetTokenInput = z.infer<typeof verifyResetTokenSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

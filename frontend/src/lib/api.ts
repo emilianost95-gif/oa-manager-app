@@ -36,6 +36,8 @@ interface RequestOptions extends Omit<RequestInit, 'body'> {
   query?: Record<string, unknown>;
   /** No registrar en consola el 401 esperado (por ejemplo al comprobar la sesión). */
   quiet401?: boolean;
+  /** No registrar en consola ningún error: la respuesta de error es un caso esperado. */
+  quiet?: boolean;
 }
 
 export function buildQuery(query: Record<string, unknown> = {}): string {
@@ -58,7 +60,7 @@ export function apiUrl(path: string, query?: Record<string, unknown>): string {
 }
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { body, query, headers, quiet401 = false, ...rest } = options;
+  const { body, query, headers, quiet401 = false, quiet = false, ...rest } = options;
 
   // Modo demo: las rutas de contenido se resuelven en memoria y nunca llegan al
   // servidor, así que los datos reales de la usuaria quedan intactos.
@@ -112,7 +114,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       }
     }
 
-    if (!(quiet401 && response.status === 401)) {
+    if (!quiet && !(quiet401 && response.status === 401)) {
       console.error(`[api] ${response.status} ${path}`, { message, code, issues });
     }
     throw new ApiError(message, response.status, code, issues);

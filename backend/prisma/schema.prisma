@@ -40,7 +40,32 @@ model User {
   units      Unit[]
   objectives LearningObjective[]
 
+  passwordResetTokens PasswordResetToken[]
+
   @@map("users")
+}
+
+// -----------------------------------------------------------------------------
+// Tokens de recuperación de contraseña.
+// -----------------------------------------------------------------------------
+// NUNCA se guarda el token que viaja en el enlace: sólo su hash SHA-256. Si
+// alguien lee la base de datos no puede reconstruir ningún enlace válido.
+// Cada token es de un solo uso (`usedAt`) y caduca (`expiresAt`).
+// -----------------------------------------------------------------------------
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
 }
 
 model Course {

@@ -8,6 +8,13 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   FRONTEND_URL: z.string().default('http://localhost:5173'),
+  /** Minutos que dura un enlace de recuperación de contraseña. */
+  PASSWORD_RESET_TTL_MINUTES: z.coerce.number().int().positive().max(1440).default(60),
+  /**
+   * URL pública del frontend, usada para construir el enlace de recuperación.
+   * Si no se define se usa el primer origen de FRONTEND_URL.
+   */
+  PUBLIC_APP_URL: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -22,14 +29,18 @@ if (!parsed.success) {
 
 const raw = parsed.data;
 
+const allowedOrigins = raw.FRONTEND_URL.split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 export const env = {
   ...raw,
   isProduction: raw.NODE_ENV === 'production',
   isDevelopment: raw.NODE_ENV === 'development',
   /** Lista de orígenes permitidos por CORS. */
-  allowedOrigins: raw.FRONTEND_URL.split(',')
-    .map((o) => o.trim())
-    .filter(Boolean),
+  allowedOrigins,
+  /** Base para los enlaces que se envían por correo. */
+  appUrl: raw.PUBLIC_APP_URL?.trim() || allowedOrigins[0] || 'http://localhost:5173',
 };
 
 export type Env = typeof env;

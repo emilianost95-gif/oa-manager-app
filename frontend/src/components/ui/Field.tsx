@@ -4,8 +4,8 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
-import { useId } from 'react';
-import { AlertCircle } from 'lucide-react';
+import { useId, useState } from 'react';
+import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { HelpTip, type HelpContent } from './HelpTip';
 
@@ -161,6 +161,75 @@ export function Select({
         >
           {children}
         </select>
+      )}
+    </FieldWrapper>
+  );
+}
+
+interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> {
+  label?: string;
+  error?: string;
+  hint?: string;
+  help?: HelpContent;
+  wrapperClassName?: string;
+}
+
+/**
+ * Campo de contraseña con botón de mostrar/ocultar.
+ *
+ * El botón sólo cambia el `type` del input: la contraseña nunca se copia,
+ * guarda ni registra en ningún lado. El estado de visibilidad se reinicia en
+ * cada montaje y no se persiste.
+ */
+export function PasswordInput({
+  label,
+  error,
+  hint,
+  help,
+  required,
+  className,
+  wrapperClassName,
+  ...props
+}: PasswordInputProps) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <FieldWrapper
+      label={label}
+      error={error}
+      hint={hint}
+      help={help}
+      required={required}
+      className={wrapperClassName}
+    >
+      {(id) => (
+        <div className="relative">
+          <input
+            id={id}
+            type={visible ? 'text' : 'password'}
+            aria-invalid={Boolean(error)}
+            className={cn('input-base pr-12', error && 'input-error', className)}
+            {...props}
+          />
+          <button
+            type="button"
+            onClick={() => setVisible((prev) => !prev)}
+            aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-pressed={visible}
+            title={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            className={cn(
+              'absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl',
+              'text-slate-400 transition hover:text-brand-600',
+              'focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-brand-600',
+            )}
+          >
+            {visible ? (
+              <EyeOff className="h-[18px] w-[18px]" aria-hidden />
+            ) : (
+              <Eye className="h-[18px] w-[18px]" aria-hidden />
+            )}
+          </button>
+        </div>
       )}
     </FieldWrapper>
   );

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../lib/api';
 import { Button } from '../components/ui/Button';
-import { TextInput } from '../components/ui/Field';
+import { PasswordInput, TextInput } from '../components/ui/Field';
 import { AuthShell } from './AuthShell';
 
 export function LoginPage() {
@@ -62,16 +62,25 @@ export function LoginPage() {
           error={errors.email}
           required
         />
-        <TextInput
-          label="Contraseña"
-          type="password"
-          autoComplete="current-password"
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={errors.password}
-          required
-        />
+        <div>
+          <PasswordInput
+            label="Contraseña"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+            required
+          />
+          <div className="mt-2 text-right">
+            <Link
+              to="/recuperar"
+              className="text-sm font-medium text-brand-600 hover:text-brand-700"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+        </div>
         <Button
           type="submit"
           size="lg"

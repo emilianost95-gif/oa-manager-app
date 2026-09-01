@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { ApiError, api } from '../lib/api';
 import { Button } from '../components/ui/Button';
-import { TextInput } from '../components/ui/Field';
+import { PasswordInput, TextInput } from '../components/ui/Field';
 import type { User } from '../types';
 
 export function SettingsPage() {
@@ -123,27 +123,24 @@ export function SettingsPage() {
         </div>
 
         <form onSubmit={handlePassword} className="space-y-4" noValidate>
-          <TextInput
+          <PasswordInput
             label="Contraseña actual"
-            type="password"
             autoComplete="current-password"
             value={passwords.current}
             onChange={(e) => setPasswords((p) => ({ ...p, current: e.target.value }))}
             error={passwordErrors.currentPassword}
             required
           />
-          <TextInput
+          <PasswordInput
             label="Nueva contraseña"
-            type="password"
             autoComplete="new-password"
             value={passwords.next}
             onChange={(e) => setPasswords((p) => ({ ...p, next: e.target.value }))}
             error={passwordErrors.newPassword}
             required
           />
-          <TextInput
+          <PasswordInput
             label="Repetir nueva contraseña"
-            type="password"
             autoComplete="new-password"
             value={passwords.confirm}
             onChange={(e) => setPasswords((p) => ({ ...p, confirm: e.target.value }))}

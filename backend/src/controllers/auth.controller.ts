@@ -9,11 +9,19 @@ import {
 } from '../lib/auth';
 import { conflict, unauthorized, notFound, badRequest } from '../lib/errors';
 import { currentUserId } from '../middleware/auth';
+import {
+  requestPasswordReset,
+  resetPassword as resetPasswordUseCase,
+  verifyPasswordResetToken,
+} from '../services/passwordReset.service';
 import type {
   ChangePasswordInput,
+  ForgotPasswordInput,
   LoginInput,
   RegisterInput,
+  ResetPasswordInput,
   UpdateProfileInput,
+  VerifyResetTokenInput,
 } from '../schemas/auth.schema';
 
 const publicUser = (u: { id: string; name: string; email: string; createdAt: Date }) => ({
@@ -90,6 +98,49 @@ export async function changePassword(req: Request, res: Response): Promise<void>
     where: { id: userId },
     data: { passwordHash: await hashPassword(newPassword) },
   });
+
+  res.json({ ok: true });
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recuperación de contraseña                                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Solicita el enlace de recuperación.
+ *
+ * Responde SIEMPRE lo mismo, exista o no la cuenta y se haya podido enviar el
+ * correo o no. Cualquier diferencia (mensaje, código o tiempo de respuesta)
+ * permitiría averiguar qué emails están registrados.
+ */
+export async function forgotPassword(req: Request, res: Response): Promise<void> {
+  const { email } = req.body as ForgotPasswordInput;
+
+  await requestPasswordReset(email, req.ip);
+
+  res.json({
+    ok: true,
+    message:
+      'Si existe una cuenta asociada a este correo, recibirás un enlace para restablecer tu contraseña.',
+  });
+}
+
+/** Comprueba que el enlace siga sirviendo, antes de mostrar el formulario. */
+export async function verifyResetToken(req: Request, res: Response): Promise<void> {
+  const { token } = req.body as VerifyResetTokenInput;
+  await verifyPasswordResetToken(token);
+  res.json({ valid: true });
+}
+
+/** Cambia la contraseña usando el token del enlace. */
+export async function resetPassword(req: Request, res: Response): Promise<void> {
+  const { token, password } = req.body as ResetPasswordInput;
+
+  await resetPasswordUseCase(token, password);
+
+  // La sesión de este navegador (si la había) queda cerrada: la usuaria debe
+  // entrar de nuevo con la contraseña recién creada.
+  clearAuthCookie(res);
 
   res.json({ ok: true });
 }

@@ -575,6 +575,12 @@ Cambia `PORT` en `backend/.env`, o `server.port` en `frontend/vite.config.ts`.
 - Interfaz responsive: sidebar fijo en escritorio, menú desplegable en móvil, tablas que se
   convierten en tarjetas.
 - Manejo de errores que nunca expone detalles técnicos a la usuaria.
+- Botón de mostrar/ocultar contraseña en todos los campos de contraseña (login, registro,
+  configuración y restablecer). Sólo cambia el `type` del input: la contraseña no se guarda,
+  copia ni registra en ninguna parte.
+- Recuperación de contraseña por enlace: solicitud desde el login, respuesta neutra que no revela
+  si el correo está registrado, y pantalla para crear la nueva contraseña con indicador de
+  fortaleza y verificación de coincidencia.
 - Ayuda contextual: iconos ⓘ junto a los campos importantes de cada formulario, con explicación y
   ejemplo. Se abren con clic o tap (no dependen del hover), se cierran con Escape y funcionan en
   móvil.
@@ -588,9 +594,53 @@ Cambia `PORT` en `backend/.env`, o `server.port` en `frontend/vite.config.ts`.
   vuelven al pulsar "Salir de demo". Mientras está activo se muestra la etiqueta MODO DEMO en el
   encabezado, y las secciones Importar y Exportar avisan que sólo funcionan con datos reales.
 
+## Recuperación de contraseña
+
+### Cómo funciona
+
+1. `POST /api/auth/forgot-password` con `{ email }`. Responde **siempre** lo mismo, exista o no la
+   cuenta y se haya podido enviar el correo o no.
+2. Se genera un token aleatorio de 32 bytes. En la tabla `password_reset_tokens` se guarda
+   **sólo su SHA-256**: ni con acceso a la base de datos se puede reconstruir un enlace válido.
+3. El enlace apunta a `/restablecer?token=...` en el frontend. Vence a los
+   `PASSWORD_RESET_TTL_MINUTES` minutos (60 por defecto) y es de un solo uso.
+4. `POST /api/auth/reset-password/verify` comprueba el enlace antes de mostrar el formulario.
+5. `POST /api/auth/reset-password` cambia la contraseña, marca el token como usado y borra el
+   resto de tokens de esa cuenta, todo en una transacción.
+
+Pedir un enlace nuevo invalida el anterior. Hay un límite de 3 solicitudes por correo y 10 por IP
+cada 15 minutos.
+
+### Falta para que el correo salga de verdad
+
+`backend/src/lib/mailer.ts` es el **único** punto de envío. Hoy no hay proveedor configurado:
+
+- en desarrollo imprime el enlace en la consola del backend, así el flujo se puede probar completo;
+- en producción registra una advertencia **sin** el enlace (un token en los logs equivale a una
+  contraseña) y no envía nada.
+
+Para hacerlo real basta con reemplazar el cuerpo de `deliver()` por una llamada al proveedor
+(Resend, SMTP, SES...). El archivo trae el ejemplo con Resend, que no necesita dependencias
+nuevas. Nada más de la aplicación cambia.
+
+### Variables de entorno
+
+| Variable | Por defecto | Para qué sirve |
+| --- | --- | --- |
+| `PASSWORD_RESET_TTL_MINUTES` | `60` | Minutos que dura el enlace. |
+| `PUBLIC_APP_URL` | primer origen de `FRONTEND_URL` | Base del enlace que va en el correo. |
+
+### Migraciones al desplegar
+
+El script `start` del backend ejecuta `prisma migrate deploy` antes de levantar el servidor, así
+cada despliegue aplica solo las migraciones pendientes. Si necesitas arrancar sin migrar, usa
+`npm run start:only`.
+
 ## Posibles mejoras futuras
 
-- Recuperación de contraseña por email y verificación de cuenta.
+- Verificación de cuenta por email.
+- Invalidar las sesiones abiertas en otros dispositivos al cambiar la contraseña (hoy los JWT son
+  sin estado y siguen vigentes hasta que vencen).
 - Duplicar una asignatura completa (con unidades y objetivos) para un curso nuevo.
 - Adjuntar recursos (guías, enlaces) a cada objetivo.
 - Historial de cambios de estado con fechas, para ver la evolución en el tiempo.

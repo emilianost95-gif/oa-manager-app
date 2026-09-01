@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { ApiError } from '../lib/api';
 import { Button } from '../components/ui/Button';
-import { TextInput } from '../components/ui/Field';
+import { PasswordInput, TextInput } from '../components/ui/Field';
 import { AuthShell } from './AuthShell';
 
 export function RegisterPage() {
@@ -86,9 +86,8 @@ export function RegisterPage() {
           error={errors.email}
           required
         />
-        <TextInput
+        <PasswordInput
           label="Contraseña"
-          type="password"
           autoComplete="new-password"
           placeholder="Mínimo 8 caracteres"
           value={form.password}
@@ -96,9 +95,8 @@ export function RegisterPage() {
           error={errors.password}
           required
         />
-        <TextInput
+        <PasswordInput
           label="Repetir contraseña"
-          type="password"
           autoComplete="new-password"
           placeholder="Repite la contraseña"
           value={form.confirm}
